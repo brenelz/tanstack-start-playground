@@ -12,17 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tanstack/react-query": "^5.51.21",
-    "@tanstack/react-query-devtools": "^5.51.21",
-    "@tanstack/react-router": "^1.51.6",
-    "@tanstack/react-router-with-query": "^1.51.6",
-    "@tanstack/router-devtools": "^1.51.6",
-    "@tanstack/router-plugin": "^1.51.6",
-    "@tanstack/start": "^1.51.6",
+    "@tanstack/react-router": "^1.52.1",
+    "@tanstack/start": "^1.52.1",
     "@vitejs/plugin-react": "^4.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "vinxi": "0.4.2"
+    "vinxi": "^0.4.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
