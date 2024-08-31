@@ -1,42 +1,36 @@
-import * as fs from 'fs'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/start'
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/start'
+import { getPlaylists } from '../lib/api'
+import { Suspense, useState } from 'react'
 
-const filePath = 'count.txt'
-
-async function readCount() {
-    return parseInt(
-        await fs.promises.readFile(filePath, 'utf-8').catch(() => '0'),
-    )
-}
-
-const getCount = createServerFn('GET', () => {
-    return readCount()
-})
-
-const updateCount = createServerFn('POST', async (addBy: number) => {
-    const count = await readCount()
-    await fs.promises.writeFile(filePath, `${count + addBy}`)
-})
+const queryOptionsPlaylists = queryOptions({
+  queryKey: ['playlists'],
+  queryFn: useServerFn(getPlaylists),
+  staleTime: Infinity
+});
 
 export const Route = createFileRoute('/')({
-    component: Home,
-    loader: async () => await getCount(),
+  component: Home,
+  loader: ({ context }) => {
+    // context.queryClient.prefetchQuery(queryOptionsPlaylists)
+  }
 })
 
 function Home() {
-    const router = useRouter()
-    const state = Route.useLoaderData()
+  const [show, setShow] = useState(false);
+  return (
+    <Suspense fallback="Loading...">
+      {show && <Playlists />}
+      <button onClick={() => setShow(!show)}>Toggle</button>
+    </Suspense>
+  )
+}
 
-    return (
-        <button
-            onClick={() => {
-                updateCount(1).then(() => {
-                    router.invalidate()
-                })
-            }}
-        >
-            Add 1 to {state}?
-        </button>
-    )
+function Playlists() {
+  const { data: playlists } = useSuspenseQuery(queryOptionsPlaylists)
+
+  return playlists.map(playlist => (
+    <li key={playlist.id}><Link to="/playlists/$id" params={{ id: playlist.id }}>{playlist.title}</Link></li>
+  ))
 }

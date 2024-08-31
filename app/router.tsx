@@ -1,12 +1,23 @@
+import { QueryClient } from '@tanstack/react-query'
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+import { routerWithQueryClient } from '@tanstack/react-router-with-query'
 import { routeTree } from './routeTree.gen'
 
-export function createRouter() {
-    const router = createTanStackRouter({
-        routeTree,
-    })
+// NOTE: Most of the integration code found here is experimental and will
+// definitely end up in a more streamlined API in the future. This is just
+// to show what's possible with the current APIs.
 
-    return router
+export function createRouter() {
+    const queryClient = new QueryClient()
+
+    return routerWithQueryClient(
+        createTanStackRouter({
+            routeTree,
+            context: { queryClient },
+            defaultPreload: 'intent',
+        }),
+        queryClient,
+    )
 }
 
 declare module '@tanstack/react-router' {
