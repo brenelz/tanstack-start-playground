@@ -1,8 +1,7 @@
-import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
+import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { addPlaylist, getPlaylists, removePlaylist } from '../lib/api'
 import { Suspense } from 'react';
-import { useServerFn } from '@tanstack/start';
 
 export const playlistsQueryOptions = () =>
   queryOptions({

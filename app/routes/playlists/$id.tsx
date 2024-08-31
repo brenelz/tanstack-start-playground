@@ -1,4 +1,4 @@
-import { queryOptions, useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query'
+import { queryOptions, useSuspenseQueries } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import { getPlaylist, getSongs } from '../../lib/api'
