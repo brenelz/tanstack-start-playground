@@ -2,6 +2,7 @@ import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-que
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { addPlaylist, getPlaylists, removePlaylist } from '../lib/api'
 import { Suspense } from 'react';
+import { useServerFn } from '@tanstack/start';
 
 export const playlistsQueryOptions = () =>
   queryOptions({
@@ -29,11 +30,11 @@ function Playlists() {
   const { data: playlists } = useSuspenseQuery(playlistsQueryOptions());
 
   const addPlaylistFn = useMutation({
-    mutationFn: addPlaylist,
+    mutationFn: useServerFn(addPlaylist),
   });
 
   const removePlaylistFn = useMutation({
-    mutationFn: removePlaylist
+    mutationFn: useServerFn(removePlaylist)
   });
 
   return (

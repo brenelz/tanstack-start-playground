@@ -22,8 +22,17 @@ export const addPlaylist = createServerFn('POST', async () => {
             "https://res.cloudinary.com/dp3ppkxo5/image/upload/v1693776474/spotify-astro/R-15112137-1586815179-1911_fsyl58.jpg",
         artists: ["Saint Hilda", "Canada Buffalo"],
     });
+
+    return redirect({
+        to: '/playlists/$id',
+        params: { id: '6' }
+    })
 });
 
 export const removePlaylist = createServerFn('POST', async () => {
     playlists.pop();
+
+    return redirect({
+        to: '/'
+    })
 });
