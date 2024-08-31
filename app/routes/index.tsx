@@ -1,36 +1,59 @@
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useServerFn } from '@tanstack/start'
-import { getPlaylists } from '../lib/api'
-import { Suspense, useState } from 'react'
+import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
+import { addPlaylist, getPlaylists, removePlaylist } from '../lib/api'
+import { Suspense } from 'react';
+import { useServerFn } from '@tanstack/start';
 
-const queryOptionsPlaylists = queryOptions({
-  queryKey: ['playlists'],
-  queryFn: useServerFn(getPlaylists),
-  staleTime: Infinity
-});
+export const playlistsQueryOptions = () =>
+  queryOptions({
+    queryKey: ['playlists'],
+    queryFn: getPlaylists,
+    staleTime: Infinity
+  });
 
 export const Route = createFileRoute('/')({
   component: Home,
   loader: ({ context }) => {
-    // context.queryClient.prefetchQuery(queryOptionsPlaylists)
+    context.queryClient.prefetchQuery(playlistsQueryOptions())
   }
 })
 
 function Home() {
-  const [show, setShow] = useState(false);
   return (
-    <Suspense fallback="Loading...">
-      {show && <Playlists />}
-      <button onClick={() => setShow(!show)}>Toggle</button>
+    <Suspense fallback="Loading Playlists...">
+      <Playlists />
     </Suspense>
   )
 }
 
 function Playlists() {
-  const { data: playlists } = useSuspenseQuery(queryOptionsPlaylists)
+  const { data: playlists } = useSuspenseQuery(playlistsQueryOptions());
 
-  return playlists.map(playlist => (
-    <li key={playlist.id}><Link to="/playlists/$id" params={{ id: playlist.id }}>{playlist.title}</Link></li>
-  ))
+  const addPlaylistFn = useMutation({
+    mutationFn: addPlaylist,
+  });
+
+  const removePlaylistFn = useMutation({
+    mutationFn: removePlaylist
+  });
+
+  return (
+    <>
+      <ul>
+        {playlists.map(playlist => (
+          <li key={playlist.id}><Link to="/playlists/$id" params={{ id: playlist.id }}>{playlist.title}</Link></li>
+        ))}
+      </ul>
+      <p>
+        <button onClick={() => addPlaylistFn.mutate()}>
+          Add Playlist
+        </button>
+      </p >
+      <p>
+        <button onClick={() => removePlaylistFn.mutate()}>
+          Remove Playlist
+        </button >
+      </p>
+    </>
+  );
 }
