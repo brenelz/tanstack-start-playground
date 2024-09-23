@@ -1,7 +1,7 @@
 import { defineConfig } from '@tanstack/start/config'
 
 export default defineConfig({
-    deployment: {
+    server: {
         preset: 'cloudflare-pages'
     }
 })
