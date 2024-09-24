@@ -11,10 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SessionImport } from './routes/session'
 import { Route as IndexImport } from './routes/index'
 import { Route as PlaylistsIdImport } from './routes/playlists/$id'
 
 // Create/Update Routes
+
+const SessionRoute = SessionImport.update({
+  path: '/session',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
@@ -37,6 +43,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/session': {
+      id: '/session'
+      path: '/session'
+      fullPath: '/session'
+      preLoaderRoute: typeof SessionImport
+      parentRoute: typeof rootRoute
+    }
     '/playlists/$id': {
       id: '/playlists/$id'
       path: '/playlists/$id'
@@ -49,7 +62,49 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({ IndexRoute, PlaylistsIdRoute })
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/session': typeof SessionRoute
+  '/playlists/$id': typeof PlaylistsIdRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/session': typeof SessionRoute
+  '/playlists/$id': typeof PlaylistsIdRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/session': typeof SessionRoute
+  '/playlists/$id': typeof PlaylistsIdRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/session' | '/playlists/$id'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/session' | '/playlists/$id'
+  id: '__root__' | '/' | '/session' | '/playlists/$id'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  SessionRoute: typeof SessionRoute
+  PlaylistsIdRoute: typeof PlaylistsIdRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  SessionRoute: SessionRoute,
+  PlaylistsIdRoute: PlaylistsIdRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 
@@ -60,11 +115,15 @@ export const routeTree = rootRoute.addChildren({ IndexRoute, PlaylistsIdRoute })
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/session",
         "/playlists/$id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/session": {
+      "filePath": "session.tsx"
     },
     "/playlists/$id": {
       "filePath": "playlists/$id.tsx"
