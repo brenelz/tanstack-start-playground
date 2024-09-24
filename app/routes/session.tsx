@@ -1,9 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn, useServerFn } from '@tanstack/start'
-import { getHeader } from 'vinxi/http'
+import { useSession } from 'vinxi/http'
 
-const getSession = createServerFn('GET', () => {
-    console.log(getHeader('User-Agent'))
+const getSession = createServerFn('GET', async () => {
+    const test = await useSession({
+        password:
+            process.env.SESSION_SECRET ?? "areallylongsecretthatyoushouldreplace",
+    });
+
 })
 
 export const Route = createFileRoute('/session')({
